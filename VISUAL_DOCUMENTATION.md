@@ -1,4 +1,4 @@
-# StreamX Visual Documentation 📊
+# StreamX Visual Documentation
 
 This document provides visual representations of StreamX features using Mermaid diagrams to help you understand how each operation works.
 
@@ -485,11 +485,11 @@ StreamX also provides advanced transformation operations inspired by functional 
 
 This visual documentation demonstrates how StreamX brings functional programming power to Java Streams through:
 
-1. **📊 Clear Visual Models** - Each operation is easy to understand
-2. **🔄 Efficient Processing** - Single-pass operations where possible  
-3. **🛡️ Error Resilience** - Graceful handling of edge cases
-4. **⚡ Performance Focus** - Optimized algorithms (e.g., topN uses heaps)
-5. **🎯 Type Safety** - Full generic support with compile-time checking
+1. **Clear Visual Models** - Each operation is easy to understand
+2. **Efficient Processing** - Single-pass operations where possible  
+3. **Error Resilience** - Graceful handling of edge cases
+4. **Performance Focus** - Optimized algorithms (e.g., topN uses heaps)
+5. **Type Safety** - Full generic support with compile-time checking
 
 StreamX transforms complex stream operations into intuitive, visually understandable processes that make your Java code more expressive and maintainable.
 
