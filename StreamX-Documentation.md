@@ -1100,33 +1100,4 @@ public static <T, K, V> Collector<T, ?, Map<K, List<V>>> toMultiMap(Function<T, 
 
 ---
 
-## Appendix B: Performance Benchmarks
-
-### Detailed Benchmark Results
-
-#### Benchmark Environment
-- **CPU**: Intel i9-9900K @ 3.6GHz (8 cores, 16 threads)
-- **Memory**: 32GB DDR4-3200
-- **JVM**: OpenJDK 21.0.1
-- **Benchmark Tool**: JMH (Java Microbenchmark Harness)
-
-#### TopN Performance Comparison
-
-| Dataset Size | Standard Sort+Limit | StreamX TopN | Improvement |
-|-------------|-------------------|--------------|-------------|
-| 1,000 | 0.12ms | 0.08ms | 33% faster |
-| 10,000 | 1.2ms | 0.45ms | 62% faster |
-| 100,000 | 15.6ms | 2.3ms | 85% faster |
-| 1,000,000 | 156ms | 23ms | 85% faster |
-
-#### Memory Usage Comparison (Top 100 from 1M elements)
-
-| Approach | Peak Memory | Allocation Rate |
-|----------|-------------|----------------|
-| Sort + Limit | 128MB | 2.1GB/sec |
-| StreamX TopN | 8MB | 0.3GB/sec |
-| **Improvement** | **94% less** | **86% less** |
-
----
-
 *End of Document*
