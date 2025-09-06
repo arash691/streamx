@@ -3,15 +3,6 @@
 
 ### A Comprehensive Technical Documentation
 
----
-
-**Version:** 1.0.0  
-**Date:** September 2024  
-**Author:** StreamX Development Team  
-**License:** MIT  
-
----
-
 ## Table of Contents
 
 1. [Executive Summary](#executive-summary)
