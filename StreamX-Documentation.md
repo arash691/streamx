@@ -3,15 +3,6 @@
 
 ### A Comprehensive Technical Documentation
 
----
-
-**Version:** 1.0.0  
-**Date:** September 2024  
-**Author:** StreamX Development Team  
-**License:** MIT  
-
----
-
 ## Table of Contents
 
 1. [Executive Summary](#executive-summary)
@@ -456,70 +447,6 @@ Stream<List<DataType>> chunked = StreamX.chunked(parallelStream, 1000);
 List<Integer> result = chunked.flatMap(List::stream)
     .collect(StreamXCollectors.topN(100));
 ```
-
----
-
-## Performance Analysis
-
-### Benchmark Results
-
-#### Top N Collection Performance
-```
-Operation: Find top 1000 elements from 1,000,000 integers
-
-Standard approach (sort + limit): 
-- Time: 156ms
-- Memory: O(n) for sorting
-
-StreamX topN collector:
-- Time: 23ms (6.8x faster)
-- Memory: O(k) for heap
-
-Improvement: 85% faster, 99% less memory
-```
-
-#### Windowing Operations Performance
-```
-Operation: Create sliding windows of size 10 from 100,000 elements
-
-Manual implementation with lists:
-- Time: 89ms
-- Memory: O(n*w) for storing windows
-
-StreamX windowed():
-- Time: 12ms (7.4x faster)  
-- Memory: O(w) for current window
-
-Improvement: 86% faster, O(n) less memory
-```
-
-#### Scan Operations Performance
-```
-Operation: Running sum of 100,000 integers
-
-Manual accumulation with loop:
-- Time: 45ms
-- Memory: O(n) for result storage
-
-StreamX scan():
-- Time: 38ms (18% faster)
-- Memory: O(1) during processing
-
-Improvement: Faster and more memory efficient
-```
-
-### Performance Characteristics Summary
-
-| Operation Category | Time Complexity | Space Complexity | Parallel Support |
-|-------------------|-----------------|------------------|------------------|
-| Indexed Operations | O(n) | O(1) | ✅ |
-| Scan Operations | O(n) | O(1) | ✅ |
-| Partitioning | O(n) | O(1) | ✅ |
-| Windowing | O(n) | O(w) | ✅ |
-| TopN Collection | O(n log k) | O(k) | ✅ |
-| Statistical Operations | O(n) | O(1) | ✅ |
-
----
 
 ## Comprehensive Examples
 
@@ -1023,15 +950,7 @@ We encourage Java developers to:
 3. **Contribute** to the open source project  
 4. **Spread awareness** in the Java community
 
-Together, we can make Java development more expressive, efficient, and enjoyable while maintaining the reliability and performance that makes Java a cornerstone of enterprise software development.
-
----
-
-**StreamX: Where Java meets the best of functional programming.**
-
-*© 2024 StreamX Development Team. Licensed under MIT License.*
-
----
+Together, we can make Java development more expressive, efficient, and enjoyable while maintaining the reliability and performance that make Java a cornerstone of enterprise software development.
 
 ## Appendix A: Complete API Reference
 
@@ -1097,35 +1016,6 @@ public static <T> Collector<T, ?, List<T>> sampling(int sampleSize)
 public static <T, K, V> Collector<T, ?, LinkedHashMap<K, V>> toLinkedMap(Function<T, K> keyMapper, Function<T, V> valueMapper)  
 public static <T, K, V> Collector<T, ?, Map<K, List<V>>> toMultiMap(Function<T, K> keyMapper, Function<T, V> valueMapper)
 ```
-
----
-
-## Appendix B: Performance Benchmarks
-
-### Detailed Benchmark Results
-
-#### Benchmark Environment
-- **CPU**: Intel i9-9900K @ 3.6GHz (8 cores, 16 threads)
-- **Memory**: 32GB DDR4-3200
-- **JVM**: OpenJDK 21.0.1
-- **Benchmark Tool**: JMH (Java Microbenchmark Harness)
-
-#### TopN Performance Comparison
-
-| Dataset Size | Standard Sort+Limit | StreamX TopN | Improvement |
-|-------------|-------------------|--------------|-------------|
-| 1,000 | 0.12ms | 0.08ms | 33% faster |
-| 10,000 | 1.2ms | 0.45ms | 62% faster |
-| 100,000 | 15.6ms | 2.3ms | 85% faster |
-| 1,000,000 | 156ms | 23ms | 85% faster |
-
-#### Memory Usage Comparison (Top 100 from 1M elements)
-
-| Approach | Peak Memory | Allocation Rate |
-|----------|-------------|----------------|
-| Sort + Limit | 128MB | 2.1GB/sec |
-| StreamX TopN | 8MB | 0.3GB/sec |
-| **Improvement** | **94% less** | **86% less** |
 
 ---
 
