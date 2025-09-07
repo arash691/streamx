@@ -1014,15 +1014,7 @@ We encourage Java developers to:
 3. **Contribute** to the open source project  
 4. **Spread awareness** in the Java community
 
-Together, we can make Java development more expressive, efficient, and enjoyable while maintaining the reliability and performance that makes Java a cornerstone of enterprise software development.
-
----
-
-**StreamX: Where Java meets the best of functional programming.**
-
-*© 2024 StreamX Development Team. Licensed under MIT License.*
-
----
+Together, we can make Java development more expressive, efficient, and enjoyable while maintaining the reliability and performance that make Java a cornerstone of enterprise software development.
 
 ## Appendix A: Complete API Reference
 
