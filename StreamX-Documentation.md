@@ -451,9 +451,9 @@ All StreamX operations support parallel streams:
 
 ```java
 // Parallel processing maintained
-List<Integer> result = largeDataSet.parallelStream()
-    .let(stream -> StreamX.chunked(stream, 1000))
-    .flatMap(List::stream)
+Stream<DataType> parallelStream = largeDataSet.parallelStream();
+Stream<List<DataType>> chunked = StreamX.chunked(parallelStream, 1000);
+List<Integer> result = chunked.flatMap(List::stream)
     .collect(StreamXCollectors.topN(100));
 ```
 
@@ -637,15 +637,14 @@ public class LogAnalyzer {
                           String message, String component) {}
     
     public Map<String, Object> analyzeLogFile(Stream<String> logLines) {
-        return logLines
-            // Parse log lines safely
-            .let(stream -> StreamX.mapSafely(stream, this::parseLogLine, null))
-            .let(stream -> StreamX.filterNotNull(stream))
-            .let(stream -> StreamX.debug(stream, "Parsed log entries"))
-            
-            // Group consecutive entries by level for burst detection
-            .let(stream -> StreamX.partitionBy(stream, LogEntry::level))
-            .collect(collectingAndThen(toList(), this::analyzeBursts));
+        // Parse log lines safely
+        Stream<LogEntry> parsed = StreamX.mapSafely(logLines, this::parseLogLine, null);
+        Stream<LogEntry> nonNull = StreamX.filterNotNull(parsed);
+        Stream<LogEntry> debugged = StreamX.debug(nonNull, "Parsed log entries");
+        
+        // Group consecutive entries by level for burst detection
+        Stream<List<LogEntry>> partitioned = StreamX.partitionBy(debugged, LogEntry::level);
+        return partitioned.collect(collectingAndThen(toList(), this::analyzeBursts));
     }
     
     private LogEntry parseLogLine(String line) throws ParseException {
@@ -677,10 +676,11 @@ public class LogAnalyzer {
             .orElse(0));
         
         // Component failure analysis
-        Map<String, Long> componentErrors = levelBursts.stream()
+        Stream<LogEntry> errorEntries = levelBursts.stream()
             .flatMap(List::stream)
-            .filter(entry -> "ERROR".equals(entry.level()))
-            .collect(StreamX.frequencies(LogEntry::component));
+            .filter(entry -> "ERROR".equals(entry.level()));
+        Map<String, Long> componentErrors = StreamX.frequencies(
+            errorEntries.map(LogEntry::component));
         
         analysis.put("componentFailures", componentErrors);
         
@@ -822,12 +822,12 @@ Every operation is designed to work seamlessly with others:
 
 ```java
 // Complex pipeline flows naturally
-Stream<Result> results = data.stream()
-    .let(stream -> StreamX.chunked(stream, 100))
-    .flatMap(List::stream)
-    .let(stream -> StreamX.mapSafely(stream, this::process, null))
-    .let(stream -> StreamX.filterNotNull(stream))
-    .let(stream -> StreamX.distinctBy(stream, Result::getId));
+Stream<Data> dataStream = data.stream();
+Stream<List<Data>> chunked = StreamX.chunked(dataStream, 100);
+Stream<Data> flattened = chunked.flatMap(List::stream);
+Stream<Result> processed = StreamX.mapSafely(flattened, this::process, null);
+Stream<Result> nonNull = StreamX.filterNotNull(processed);
+Stream<Result> results = StreamX.distinctBy(nonNull, Result::getId);
 ```
 
 #### 3. **Performance by Design**

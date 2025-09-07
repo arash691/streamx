@@ -354,30 +354,6 @@ class StreamXFunctionalTest {
         assertThat(transposed.get(3)).containsExactly(6);
     }
     
-    // ========== Enhanced Side Effects Tests ==========
-    
-    @Test
-    @DisplayName("onEach should perform action and return stream")
-    void testOnEach() {
-        List<String> sideEffects = new ArrayList<>();
-        
-        List<Integer> result = StreamX.onEach(Stream.of(1, 2, 3),
-            n -> sideEffects.add("processed: " + n))
-            .toList();
-        
-        assertThat(result).containsExactly(1, 2, 3);
-        assertThat(sideEffects).containsExactly("processed: 1", "processed: 2", "processed: 3");
-    }
-    
-    @Test
-    @DisplayName("let should transform stream with function")
-    void testLet() {
-        Integer result = StreamX.let(Stream.of(1, 2, 3, 4, 5),
-            stream -> stream.mapToInt(Integer::intValue).sum());
-        
-        assertThat(result).isEqualTo(15);
-    }
-    
     // ========== Mathematical Operations Tests ==========
     
     @Test

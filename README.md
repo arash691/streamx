@@ -209,35 +209,6 @@ List<List<Integer>> transposed = StreamX.transpose(matrix).toList();
 // Result: [[1,4,7], [2,5,8], [3,6,9]]
 ```
 
-## **Enhanced Side Effects** (Kotlin inspired)
-
-Better debugging and side-effect management.
-
-**Before (Standard Java):**
-```java
-// peek() is the only option, but it's not intuitive
-List<Integer> result = stream
-    .peek(item -> System.out.println("Processing: " + item))  // Confusing name
-    .map(this::transform)
-    .peek(item -> System.out.println("Transformed: " + item)) // Cluttered
-    .toList();
-
-// No easy way to apply function to entire stream and continue
-```
-
-**After (StreamX):**
-```java
-// Cleaner side effects - inspired by Kotlin
-List<Integer> result = StreamX.onEach(stream, item -> System.out.println("Processing: " + item))
-    .map(this::transform)
-    .let(transformedStream -> StreamX.onEach(transformedStream, 
-        item -> System.out.println("Transformed: " + item)))
-    .toList();
-
-// Apply function to stream and continue - Kotlin's let
-Integer sum = StreamX.let(numbers.stream(), s -> s.mapToInt(Integer::intValue).sum());
-```
-
 ## **Mathematical Operations** (Various FP languages inspired)
 
 Rich mathematical operations missing from Java Streams.
@@ -630,14 +601,15 @@ List<String> result = items.stream()
 **After (StreamX):**
 ```java
 // Clean debugging with context
-List<String> result = StreamX.debug(items.stream(), "Input")
-    .map(this::transform)
-    .let(stream -> StreamX.debug(stream, "After transform"))
+Stream<String> input = StreamX.debug(items.stream(), "Input");
+Stream<String> transformed = input.map(this::transform);
+List<String> result = StreamX.debug(transformed, "After transform")
     .filter(this::isValid)
     .collect(toList());
 
-// Or use tap for custom actions
-List<String> result = StreamX.tap(items.stream(), this::logProcessing)
+// Or use standard peek() for side effects
+List<String> result = items.stream()
+    .peek(this::logProcessing)
     .map(this::transform)
     .collect(toList());
 ```
@@ -683,13 +655,15 @@ summaries.sort((a, b) -> Double.compare(b.getTotalAmount(), a.getTotalAmount()))
 **StreamX Approach:**
 ```java
 // Process customer orders - the StreamX way
-List<OrderSummary> summaries = StreamX.of(customers)
-    .debug("Processing customers")
+Stream<Customer> debuggedCustomers = StreamX.debug(StreamX.of(customers), "Processing customers");
+Stream<RegionOrder> regionOrders = debuggedCustomers
     .flatMap(customer -> customer.getOrders().stream()
-        .map(order -> new RegionOrder(customer.getRegion(), order.getAmount())))
-    .let(stream -> StreamX.distinctBy(stream, RegionOrder::getRegion)) // Remove duplicate processing
-    .collect(groupingBy(RegionOrder::getRegion))
-    .entrySet().stream()
+        .map(order -> new RegionOrder(customer.getRegion(), order.getAmount())));
+
+Stream<RegionOrder> distinctRegions = StreamX.distinctBy(regionOrders, RegionOrder::getRegion);
+Map<String, List<RegionOrder>> groupedByRegion = distinctRegions.collect(groupingBy(RegionOrder::getRegion));
+
+List<OrderSummary> summaries = groupedByRegion.entrySet().stream()
     .map(entry -> {
         String region = entry.getKey();
         StreamStatistics stats = StreamX.statistics(
@@ -698,8 +672,7 @@ List<OrderSummary> summaries = StreamX.of(customers)
         return new OrderSummary(region, stats.getSum(), 
                               stats.getCount(), stats.getAverage());
     })
-    .collect(StreamXCollectors.topN(10, comparing(OrderSummary::getTotalAmount)))
-    .collect(toList());
+    .collect(StreamXCollectors.topN(10, comparing(OrderSummary::getTotalAmount)));
 ```
 
 ## Running Tests
@@ -731,12 +704,11 @@ StreamX is designed to work alongside standard Java Streams, not replace them. Y
 
 ```java
 // Standard streams + StreamX enhancements
-List<Result> results = data.stream()
-    .filter(standardFilter)
-    .let(stream -> StreamX.chunked(stream, 100))  // Use StreamX for chunking
-    .flatMap(List::stream)
-    .map(standardMapper)
-    .let(stream -> StreamX.distinctBy(stream, Result::getKey))  // Use StreamX for distinct
+Stream<Data> filtered = data.stream().filter(standardFilter);
+Stream<List<Data>> chunked = StreamX.chunked(filtered, 100);
+Stream<Data> flattened = chunked.flatMap(List::stream);
+Stream<Result> mapped = flattened.map(standardMapper);
+List<Result> results = StreamX.distinctBy(mapped, Result::getKey)
     .collect(toList());
 ```
 
@@ -764,7 +736,6 @@ StreamX is thoroughly tested with **76 comprehensive unit tests**:
 | `pairwise` | **Various FP languages** | Consecutive element pairs |
 | `interpose` | **Clojure** | Insert separators |
 | `transpose` | **Haskell** | Matrix transposition |
-| `onEach`, `also`, `let` | **Kotlin** | Enhanced side effects |
 | `frequencies` | **Clojure, Python** | Element frequency counting |
 | `cumSum`, `cumProduct`, `diff` | **NumPy, R, scientific libraries** | Mathematical operations |
 | `zipAll`, `zipLongest` | **Scala** | Advanced stream zipping |

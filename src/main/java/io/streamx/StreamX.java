@@ -627,12 +627,6 @@ public class StreamX {
         return stream.peek(element -> System.out.println(message + ": " + element));
     }
     
-    /**
-     * Performs a side effect on each element (cleaner than peek)
-     */
-    public static <T> Stream<T> tap(Stream<T> stream, Consumer<T> action) {
-        return stream.peek(action);
-    }
     
     // ========== Mathematical Operations ==========
     
@@ -1158,33 +1152,6 @@ public class StreamX {
                 .filter(list -> i < list.size())
                 .map(list -> list.get(i))
                 .toList());
-    }
-    
-    // ========== Enhanced Side Effects (Kotlin inspired) ==========
-    
-    /**
-     * Performs action on each element and returns the stream
-     * Inspired by Kotlin's onEach - cleaner than peek
-     */
-    public static <T> Stream<T> onEach(Stream<T> stream, Consumer<T> action) {
-        return stream.peek(action);
-    }
-    
-    /**
-     * Performs action on the stream and returns it unchanged
-     * Inspired by Kotlin's also
-     */
-    public static <T> Stream<T> also(Stream<T> stream, Consumer<Stream<T>> action) {
-        action.accept(stream);
-        return stream;
-    }
-    
-    /**
-     * Transforms the stream with the given function
-     * Inspired by Kotlin's let
-     */
-    public static <T, R> R let(Stream<T> stream, Function<Stream<T>, R> transform) {
-        return transform.apply(stream);
     }
     
     // ========== Mathematical Operations (Various FP languages) ==========
